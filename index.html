@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">    
+    <title>TEST</title>
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body>    
+    <div class="wrap index_page" id="index-box">     
+        <div class="page1">
+            <img class="logo" src="images/logo.png" alt="">
+            <img class="title" src="images/title.png" alt="">
+            <span class="startBtn"><img src="images/start.png" alt=""></span>
+        </div>
+        <div class="page2">
+            <div class="photoBox">
+                <img class="photo2" src="images/photo_02.png" alt="">
+                
+                <div class="paper">
+                    <div class="myPhoto">
+                    
+                    </div>
+                     <a href="javascript:;" class="upload_img btn">上传图片
+                        <input type="file">
+                    </a> 
+                    <!-- <div class="photo_result">
+                        <p>您的颜值为</p>
+                        <a class="btn" href="javascript:;">去抽奖</a>
+                    </div> -->
+                </div>
+                <img class="photo" src="images/photo_01.png" alt=""> 
+                
+            </div>
+        </div>
+        <div class="page3">
+            <div class="machine">
+                <img src="images/machine.png" alt="">
+                <div class="drawBox">
+                    <div class="scrollBox scrollBox_1"></div>
+                    <div class="scrollBox scrollBox_2"></div>
+                    <div class="scrollBox scrollBox_3"></div>
+                </div>
+            </div>
+        </div>
+        <!--基本信息弹框1-->
+        <!-- <div class="html-cover info-cover" v-show="infoStatus">
+            <div class="html-box info-box">
+                 <b class="close" @click="infoStatus = false"></b>
+                 <div class="formBox">
+                    <input type="number" name="" v-model.number="number" placeholder="请输入您的工号">
+                    <input type="number" name="" v-model.number="id_num" placeholder="请输入您身份证末六位">
+                    <span class="cancel" @click="infoStatus = false"><img src="images/cancel.png" alt=""></span>
+                    <span class="submit" @click="submitHandle"><img src="images/submit.png" alt=""></span>
+                 </div>
+            </div>
+        </div> -->
+        <!-- 未绑定银行卡 -->
+        <div class="goBind model" v-show="bindStatus">
+            <div class="modelBox">
+                <span class="close">
+                    <img src="images/close.png" alt="">
+                </span>
+                <div class="whiteBox">
+                    <span class="bq_img"><img src="images/cry.png" alt=""></span>
+                    <p>您还未绑定我行微信银行哦，<br>快去绑定吧！</p>
+                    <a href="javascript:;">去绑定</a>
+                </div>
+                
+            </div>
+        </div>
+        <!--点击获取更多弹框  -->
+        <div class="getMore model" style="display:none;">
+            <div class="modelBox">
+                <span class="close">
+                    <img src="images/close.png" alt="">
+                </span>
+                <div class="whiteBox">
+                    <p>活动链接呼唤至票圈</p>
+                    <span class="bq_img"><img src="images/share_bg.png" alt=""></span>
+                    <a href="javascript:;">获取</a>
+                    <p class="line"></p>
+                    <p>签约人脸识别功能且进行转账<br>交易可获<span>50</span>颜值（每周一次）</p>
+                    <span class="bq_img"><img class="niu" src="images/niu.png" alt=""></span>
+                    <a href="javascript:;">获取</a>
+                </div>
+                
+            </div>
+        </div>
+
+        <!--中奖弹框  -->
+        <div class="giftMore model">
+            <div class="modelBox">
+                <!-- <span class="close">
+                    <img src="images/close.png" alt="">
+                </span> -->
+                <div class="whiteBox">
+                    <!-- <div class="title"><img src="images/gx_title.png" alt=""></div> -->
+                     <div class="title"><img src="images/error.png" alt=""></div> 
+                    <span class="bq_img" style="display:none;"><img src="images/win_1.png" alt=""></span>
+                    <span class="red_img" style="display:none;">
+                        <img src="images/red_pack.png" alt="">
+                        <span>现金红包</span>
+                    </span>
+                    <span class="error_img">
+                        <img src="images/cry_2.png" alt="">
+                    </span>
+                    <p>恭喜您 <br>获得迪士尼电子门票</p>
+                    <input type="text" style="display:none;" placeholder="请输入手机号码">
+                </div>
+                <a href="javascript:;" class="submit">提交</a>
+            </div>
+        </div>
+
+        <div class="tipBox" v-show="tipModel.tipStatus">
+            <div class="tibBox_inner">
+                <p v-html="tipModel.tipTxt"></p>
+            </div>
+        </div> 
+    </div>
+    <script src="js/zepto.min.js"></script>
+    <script type="text/javascript">
+        var basep = "images/", //图片目录
+            preLoadSource = [ //背景资源
+                
+            ];
+    </script>
+    <script src="js/loading.js"></script>
+    <script src="js/vue.min.js"></script>
+    <script>
+		//加载资源数组必须在loading之前进行配置
+        
+        var isComing = 0;  //0代表false 表示没有参加过答题。 1为true表示已参加过答题 , 2为已绑定，但未答题
+        $(function(){
+            new Vue({
+                el:"#index-box",
+                data:{
+                    tipModel:{
+                        tipStatus:false, //提示框状态
+                        tipTxt:''
+                    },
+                    bindStatus:false,
+
+                },
+                methods:{
+                    
+                    submitHandle:function(){
+                        var That = this;
+                        if(this.number == "" || this.id_num == ""){
+                            this.tipStatus = true;
+                            this.tipTxt = "请填写<br/>完整信息";
+                            setTimeout(function(){
+                                That.tipStatus = false;
+                            },1000)
+                            return false;
+                        }
+                        if(this.id_num.toString().length  != 6){
+                            this.tipStatus = true;
+                            this.tipTxt = "请输入<br/>身份证后六位";
+                            setTimeout(function(){
+                                That.tipStatus = false;
+                            },1000)
+                            return false;
+                        }
+
+                        this.tipStatus = true;
+                        this.tipTxt = "数据<br/>提交中";
+                        $.ajax({
+                                url:'http://wx.xhwxpos.com/questionnaire/index.php?m=Wap&c=Index&a=index&debug=1',
+                                dataType:'json',
+                                type:'post',
+                                data:{
+                                    "number":That.number.toString(),
+                                    "id_num":That.id_num.toString()
+                                },
+                                async:true,
+                                success:function(res){
+                                    if(res.sta == 0){   //正常
+                                        That.tipStatus = false;    //提示框
+                                        That.infoStatus = false;   //信息框
+                                        That.slide01Status = true;
+                                    }else{     //不正常
+                                        That.tipStatus = true;    //提示框
+                                        That.tipTxt=res.msg;
+                                        setTimeout(function(){
+                                            That.tipStatus = false;
+                                        },1000)
+                                    }                                  
+                                },
+                                error:function(XMLHttpRequest, textStatus, errorThrown) {
+                                    console.log(XMLHttpRequest)
+                                }
+                            })
+                    }
+                },
+                mounted:function(){
+                    
+                    
+                }
+            })
+        })
+    </script>
+    
+</body>
+</html>
