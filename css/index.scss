@@ -295,6 +295,18 @@ img{
                 
             }
         }
+        a.submit{
+            width: REM(200);
+            height: REM(60);
+            line-height: REM(60);
+            text-align: center;
+            background: $orange;
+            display: block;
+            margin: REM(30) auto 0;
+            font-size: REM(24);
+            color: #ffffff;
+            @include prefixer(border-radius,REM(10));
+        }
     }
 }
 //点击获取更多弹框
@@ -397,6 +409,100 @@ img{
         }
     }
 }
+// 中奖展示弹框
+.rewardModel{
+    .modelBox{
+        .whiteBox{
+            .bq_img{
+                width: REM(347);
+            }
+        }
+        .txt-box{
+            padding-top: REM(30);
+            p{
+                color: #ffffff;
+                text-align: center;
+                font-size: REM(24);
+            }
+        }
+    }
+}
+/*发送手机号码弹框*/
+.phoneModel{
+    .modelBox{
+        .whiteBox{
+            .bq_img{
+                width: REM(95);
+            }
+            h3{
+                font-size: REM(36);
+                color: $orange;
+                text-align: center;
+                padding-top: REM(30);
+            }
+        }
+        .btn-box{
+            width: 100%;
+            margin: 0 auto;
+            padding-top: REM(30);
+            a{
+                width: 40%;
+                margin: 0 5%;
+                float: left;
+                @include prefixer(border-radius,REM(15));
+                line-height: REM(60);
+                height: REM(60);
+                color: #ffffff;
+                background: $orange;
+                text-align: center;                 
+                font-size: REM(30);
+                display: block;
+            }
+        }
+    }
+}
+//颜值提示弹框
+.faceModel{
+    .modelBox{
+        .btn-box{
+            width: 100%;
+            margin: 0 auto;
+            padding-top: REM(30);
+            a{
+                width: 40%;
+                margin: 0 5%;
+                float: left;
+                @include prefixer(border-radius,REM(15));
+                line-height: REM(60);
+                height: REM(60);
+                color: #ffffff;
+                background: $orange;
+                text-align: center;                 
+                font-size: REM(30);
+                display: block;
+            }
+        }
+    }
+}
+//介绍页
+.infoModel{
+    background: #1f1c3f;    
+    .modelBox{
+        width:REM(579);
+        padding: 0;
+        background:none;
+    }
+}
+//分享到朋友圈
+.shareModel{
+    img{
+        width: REM(467);
+        float: right;
+        margin-top: REM(50);
+        margin-right: REM(50);
+    }
+}
+
 /*圆圈变大效果*/
 @keyframes wran {
     0% {
