@@ -9,12 +9,12 @@
 </head>
 <body>    
     <div class="wrap index_page" id="index-box">     
-        <div class="page1">
+        <div class="page1" v-show="pageStatus.onePage">
             <img class="logo" src="images/logo.png" alt="">
             <img class="title" src="images/title.png" alt="">
-            <span class="startBtn"><img src="images/start.png" alt=""></span>
+            <span class="startBtn" @click="startHandle"><img src="images/start.png" alt=""></span>
         </div>
-        <div class="page2" style="display:none;">
+        <div class="page2" v-show="pageStatus.twoPage">
             <div class="photoBox">
                 <img class="photo2" src="images/photo_02.png" alt="">
                 
@@ -22,33 +22,33 @@
                     <div class="myPhoto">
                     
                     </div>
-                     <a href="javascript:;" class="upload_img btn">上传图片
-                        <input type="file">
+                     <a v-show="!face.result" href="javascript:;" class="upload_img btn">上传图片
+                        <input type="file" id="file">
                     </a> 
-                    <!-- <div class="photo_result">
-                        <p>您的颜值为</p>
-                        <a class="btn" href="javascript:;">去抽奖</a>
-                    </div> -->
+                    <div v-show="face.result" class="photo_result">
+                        <p>您的颜值为{{face.num}}</p>
+                        <a class="btn" href="javascript:;" @click="lotteryHandle">去抽奖</a>
+                    </div>
                 </div>
                 <img class="photo" src="images/photo_01.png" alt=""> 
                 
             </div>
         </div>
-        <div class="page3" style="display:none;">
+        <div class="page3" v-show="pageStatus.threePage" @click="startLottery">
             <div class="machine">
                 <img src="images/machine.png" alt="">
                 <div class="drawBox">
-                    <div class="scrollBox scrollBox_1"></div>
-                    <div class="scrollBox scrollBox_2"></div>
-                    <div class="scrollBox scrollBox_3"></div>
+                    <div class="scrollBox scrollBox_1" :class="[lottery.start ? 'scroll' : '']"></div>
+                    <div class="scrollBox scrollBox_2" :class="[lottery.start ? 'scroll' : '']"></div>
+                    <div class="scrollBox scrollBox_3" :class="[lottery.start ? 'scroll' : '']"></div>
                 </div>
             </div>
         </div>
 
         <!-- 未绑定银行卡 -->
-        <div class="goBind model" v-show="bindStatus">
+        <div class="goBind model" v-show="status.isBind">
             <div class="modelBox">
-                <span class="close">
+                <span class="close" @click="status.isBind = false">
                     <img src="images/close.png" alt="">
                 </span>
                 <div class="whiteBox">
@@ -197,11 +197,42 @@
                         tipStatus:false, //提示框状态
                         tipTxt:''
                     },
-                    bindStatus:false,
+                    bindNum:1,        //是否绑定  0未绑定 1绑定
 
+                    pageStatus:{
+                        onePage: true,
+                        twoPage: false,
+                        threePage: false
+                    },
+                    status: {
+                        isBind: false,   //绑定弹框状态
+
+                    },
+                    face:{
+                        num:0,
+                        result:false
+                    },
+                    lottery:{
+                        start:false,   //未抽奖
+                    }
                 },
                 methods:{
-                    
+                    startHandle:function(){ //开始游戏
+                        if(this.bindNum == 1){   //已绑定
+                            this.pageStatus.twoPage = true;
+                            this.pageStatus.onePage = false;
+                        }else{
+                            this.status.isBind = true;
+                        }
+                    },
+                    lotteryHandle:function(){
+                        this.pageStatus.twoPage = false;
+                        this.pageStatus.threePage = true;
+                    },
+                    startLottery:function(){
+                        this.lottery.start = true;
+                        
+                    },
                     submitHandle:function(){
                         var That = this;
                         if(this.number == "" || this.id_num == ""){
@@ -249,10 +280,29 @@
                                     console.log(XMLHttpRequest)
                                 }
                             })
+                    },
+                    init:function(){
+                        var This = this;
+                        $(function(){
+                            $("#file").unbind().on('change',function(){
+                                $('.photo2').animate({
+                                    top:'14.7rem'
+                                },1000)
+                                $('.photo').animate({
+                                    top:'-13rem'
+                                },1000);
+                                setTimeout(function(){
+                                    This.face={
+                                        num:100,
+                                        result:true
+                                    }
+                                },1000)
+                            })
+                        })
                     }
                 },
                 mounted:function(){
-                    
+                    this.init();
                     
                 }
             })
