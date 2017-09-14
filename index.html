@@ -38,9 +38,12 @@
             <div class="machine">
                 <img src="images/machine.png" alt="">
                 <div class="drawBox">
-                    <div class="scrollBox scrollBox_1" :class="[lottery.start ? 'scroll' : '']"></div>
-                    <div class="scrollBox scrollBox_2" :class="[lottery.start ? 'scroll' : '']"></div>
-                    <div class="scrollBox scrollBox_3" :class="[lottery.start ? 'scroll' : '']"></div>
+                    <!-- <div class="scrollBox scrollBox_1" :class="[lottery.start ? 'scroll' : '', lottery.num == 1 ? 'one' : '', lottery.num == 2 ? 'two' : '',lottery.num == 3 ? 'three' : '' , lottery.num == 0 ? lottery.class[lottery.randomNum][classOne] : '']"></div>
+                    <div class="scrollBox scrollBox_2" :class="[lottery.start ? 'scroll' : '', lottery.num == 1 ? 'one' : '', lottery.num == 2 ? 'two' : '',lottery.num == 3 ? 'three' : '', lottery.num == 0 ? lottery.class[lottery.randomNum][classTwo] : '']"></div>
+                    <div class="scrollBox scrollBox_3" :class="[lottery.start ? 'scroll' : '', lottery.num == 1 ? 'one' : '', lottery.num == 2 ? 'two' : '',lottery.num == 3 ? 'three' : '', lottery.num == 0 ? lottery.class[lottery.randomNum][classThree] : '']"></div> -->
+                    <div class="scrollBox scrollBox_1" :class="[lottery.start ? 'scroll' : '', lottery.num == 1 ? 'one' : '', lottery.num == 2 ? 'two' : '',lottery.num == 3 ? 'three' : '', lottery.num == 0 ? classPage[randomNum][0] : '']"></div>
+                    <div class="scrollBox scrollBox_2" :class="[lottery.start ? 'scroll' : '', lottery.num == 1 ? 'one' : '', lottery.num == 2 ? 'two' : '',lottery.num == 3 ? 'three' : '', lottery.num == 0 ? classPage[randomNum][1] : '']"></div>
+                    <div class="scrollBox scrollBox_3" :class="[lottery.start ? 'scroll' : '', lottery.num == 1 ? 'one' : '', lottery.num == 2 ? 'two' : '',lottery.num == 3 ? 'three' : '', lottery.num == 0 ? classPage[randomNum][2] : '']"></div> 
                 </div>
             </div>
         </div>
@@ -209,29 +212,49 @@
 
                     },
                     face:{
-                        num:0,
+                        num:0,                        
                         result:false
                     },
-                    lottery:{
+                    randomNum:null,
+                    classPage:[   
+                            ["one","two","three"],
+                            ["one","three","two"],
+                            ["two","one","three"],
+                            ["two","three","one"],
+                            ["three","one","two"],
+                            ["three","two","one"]
+                        ],
+                    lottery:{ 
                         start:false,   //未抽奖
+                        num:null,         //默认为不中奖，1为迪士尼，2为咖啡券，3为现金红包
+                        
+                        
                     }
                 },
                 methods:{
-                    startHandle:function(){ //开始游戏
+                    startHandle:function(){      //开始游戏
                         if(this.bindNum == 1){   //已绑定
                             this.pageStatus.twoPage = true;
                             this.pageStatus.onePage = false;
-                        }else{
+                        }else{   //未绑定
                             this.status.isBind = true;
                         }
                     },
-                    lotteryHandle:function(){
+                    lotteryHandle:function(){   //点击去抽奖
                         this.pageStatus.twoPage = false;
                         this.pageStatus.threePage = true;
                     },
-                    startLottery:function(){
+                    startLottery:function(){    //点击开始抽奖
+                        var This = this;
                         this.lottery.start = true;
-                        
+                        setTimeout(function(){
+                            This.lottery.num = 0;
+                            if(This.lottery.num == 0){
+                                This.randomNum = This.randomHandle(5,0);
+                            }
+                            This.lottery.start = false;
+                            console.log("恭喜您中奖了");
+                        },1000)
                     },
                     submitHandle:function(){
                         var That = this;
@@ -280,6 +303,11 @@
                                     console.log(XMLHttpRequest)
                                 }
                             })
+                    },
+                    randomHandle:function(x,y){
+                        // x是随机数上限，y是随机数下限
+                        let rand = parseInt(Math.random() * (x - y + 1) + y);
+                        return rand;
                     },
                     init:function(){
                         var This = this;
