@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">    
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>TEST</title>
     <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/weui.css">
 </head>
-<body>    
-    <div class="wrap index_page" id="index-box">     
+
+<body>
+    <div class="wrap index_page" id="index-box">
         <div class="page1" v-show="pageStatus.onePage">
             <img class="logo" src="images/logo.png" alt="">
             <img class="title" src="images/title.png" alt="">
@@ -17,34 +20,34 @@
         <div class="page2" v-show="pageStatus.twoPage">
             <div class="photoBox">
                 <img class="photo2" src="images/photo_02.png" alt="">
-                
+
                 <div class="paper">
                     <div class="myPhoto">
-                    
+                        <img id="portrait" src="" >  
                     </div>
-                     <a v-show="!face.result" href="javascript:;" class="upload_img btn">上传图片
-                        <input type="file" id="file">
-                    </a> 
+                    <a v-show="!face.result" href="javascript:;" class="upload_img btn">上传图片
+                        <input  type="file" name="file" id="file" @change="showPreview(this)"/>
+                    </a>
                     <div v-show="face.result" class="photo_result">
                         <p>您的颜值为{{face.num}}</p>
                         <a class="btn" href="javascript:;" @click="lotteryHandle">去抽奖</a>
                     </div>
                 </div>
-                <img class="photo" src="images/photo_01.png" alt=""> 
-                
+                <img class="photo" src="images/photo_01.png" alt="">
+
             </div>
         </div>
-        <div class="page3" v-show="pageStatus.threePage" @click="startLottery">
+        <!-- v-show="pageStatus.threePage" -->
+        <div class="page3" >
             <div class="machine">
                 <img src="images/machine.png" alt="">
                 <div class="drawBox">
-                    <!-- <div class="scrollBox scrollBox_1" :class="[lottery.start ? 'scroll' : '', lottery.num == 1 ? 'one' : '', lottery.num == 2 ? 'two' : '',lottery.num == 3 ? 'three' : '' , lottery.num == 0 ? lottery.class[lottery.randomNum][classOne] : '']"></div>
-                    <div class="scrollBox scrollBox_2" :class="[lottery.start ? 'scroll' : '', lottery.num == 1 ? 'one' : '', lottery.num == 2 ? 'two' : '',lottery.num == 3 ? 'three' : '', lottery.num == 0 ? lottery.class[lottery.randomNum][classTwo] : '']"></div>
-                    <div class="scrollBox scrollBox_3" :class="[lottery.start ? 'scroll' : '', lottery.num == 1 ? 'one' : '', lottery.num == 2 ? 'two' : '',lottery.num == 3 ? 'three' : '', lottery.num == 0 ? lottery.class[lottery.randomNum][classThree] : '']"></div> -->
                     <div class="scrollBox scrollBox_1" :class="[lottery.start ? 'scroll' : '', lottery.num == 1 ? 'one' : '', lottery.num == 2 ? 'two' : '',lottery.num == 3 ? 'three' : '', lottery.num == 0 ? classPage[randomNum][0] : '']"></div>
                     <div class="scrollBox scrollBox_2" :class="[lottery.start ? 'scroll' : '', lottery.num == 1 ? 'one' : '', lottery.num == 2 ? 'two' : '',lottery.num == 3 ? 'three' : '', lottery.num == 0 ? classPage[randomNum][1] : '']"></div>
-                    <div class="scrollBox scrollBox_3" :class="[lottery.start ? 'scroll' : '', lottery.num == 1 ? 'one' : '', lottery.num == 2 ? 'two' : '',lottery.num == 3 ? 'three' : '', lottery.num == 0 ? classPage[randomNum][2] : '']"></div> 
+                    <div class="scrollBox scrollBox_3" :class="[lottery.start ? 'scroll' : '', lottery.num == 1 ? 'one' : '', lottery.num == 2 ? 'two' : '',lottery.num == 3 ? 'three' : '', lottery.num == 0 ? classPage[randomNum][2] : '']"></div>
                 </div>
+                <span class="startLottery" @click="startLottery"></span>
+                <span class="more"></span>
             </div>
         </div>
 
@@ -59,7 +62,7 @@
                     <p>您还未绑定我行微信银行哦，<br>快去绑定吧！</p>
                     <a href="javascript:;">去绑定</a>
                 </div>
-                
+
             </div>
         </div>
         <!--点击获取更多弹框  -->
@@ -77,35 +80,40 @@
                     <span class="bq_img"><img class="niu" src="images/niu.png" alt=""></span>
                     <a href="javascript:;">获取</a>
                 </div>
-                
+
             </div>
         </div>
 
         <!--中奖成功失败弹框  -->
-        <div class="giftMore model" style="display:none">
+        <div class="giftMore model" v-show="alertModel.lotterySuccess">
             <div class="modelBox">
                 <!-- <span class="close">
                     <img src="images/close.png" alt="">
                 </span> -->
                 <div class="whiteBox">
-                    <!-- <div class="title"><img src="images/gx_title.png" alt=""></div> --> 
-                     <div class="title"><img src="images/error.png" alt=""></div> 
-                    <span class="bq_img" style="display:none;"><img src="images/win_1.png" alt=""></span>
-                    <span class="red_img" style="display:none;">
+                    <!-- <span class="bq_img" v-if="infoData.prizeLevel !==  0"><img src="images/win_1.png" alt=""></span> -->
+                    <div class="title" v-if="infoData.prizeLevel != 0"><img src="images/gx_title.png" alt=""></div>
+                    <div class="title" v-if="infoData.prizeLevel == 0"><img src="images/error.png" alt=""></div>
+                    <span class="bq_img" v-if="infoData.prizeLevel ==  1"><img src="images/win_1.png" alt=""></span>
+                    <span class="bq_img" v-if="infoData.prizeLevel ==  2"><img src="images/win_2.png" alt=""></span>
+                    <span class="red_img" v-if="infoData.prizeLevel == 3">
                         <img src="images/red_pack.png" alt="">
                         <span>现金红包</span>
                     </span>
-                    <span class="error_img">
+                    <span class="error_img" v-if="infoData.prizeLevel == 0">
                         <img src="images/cry_2.png" alt="">
                     </span>
-                    <p>恭喜您 <br>获得迪士尼电子门票</p>
-                    <input type="text" style="display:none;" placeholder="请输入手机号码">
+                    <p v-if="infoData.prizeLevel == 1">恭喜您 <br>获得迪士尼电子门票</p>
+                    <p v-if="infoData.prizeLevel == 2">恭喜您 <br>获得costa咖啡券</p>
+                    <p v-if="infoData.prizeLevel == 3">恭喜您 <br>获得现金红包</p>
+                    <p v-if="infoData.prizeLevel == 0">很遗憾您没有中奖 <br>再接再励吧</p>
+                    <input v-if="infoData.prizeLevel == 1 || infoData.prizeLevel == 2 " type="text" placeholder="请输入手机号码">
                 </div>
-                <a href="javascript:;" class="submit">提交</a>
+                <a href="javascript:;" class="submit" v-if="infoData.prizeLevel != 3">提交</a>
             </div>
         </div>
         <!-- 中奖展示弹框 -->
-        <div class="rewardModel model" style="display:none">
+        <div class="rewardModel model" v-show="alertModel.lotteryShow">
             <div class="modelBox">
                 <span class="close">
                     <img src="images/close.png" alt="">
@@ -114,7 +122,8 @@
                     <span class="bq_img">
                         <img src="images/win_3.png" alt="">                        
                     </span>
-                    <p>迪士尼电子门票<br>将发送至该手机号码</p>  <!--costa咖啡券<br>将发送至该手机号码    红包金额<br>已存入您的微信钱包-->
+                    <p>迪士尼电子门票<br>将发送至该手机号码</p>
+                    <!--costa咖啡券<br>将发送至该手机号码    红包金额<br>已存入您的微信钱包-->
                 </div>
                 <div class="txt-box">
                     <p>注意短信查收，如有疑问，<br>请拨打客服电话：0571-96527</p>
@@ -150,10 +159,11 @@
                     <span class="bq_img">
                         <img src="images/tangle.png" alt=""> <!--images/cry.png   images/smile.png-->
                     </span>
-                    <p>您已获取过照片颜值分</p>  <!--您的颜值不足<br>速去加颜值     您这周颜值已达到顶峰<br>下周再来吧-->
+                    <p>您已获取过照片颜值分</p>
+                    <!--您的颜值不足<br>速去加颜值     您这周颜值已达到顶峰<br>下周再来吧-->
                 </div>
                 <a href="javascript:;" class="submit">返回</a>
-                <div class="btn-box">  
+                <div class="btn-box">
                     <a href="javascript:;">拒绝</a>
                     <a href="javascript:;">确定</a>
                 </div>
@@ -172,37 +182,80 @@
         <div class="shareModel model" style="display:none;">
             <img src="images/share.png" alt="">
         </div>
+        <!-- 图片上传中 -->
+        <div id="loadingToast" v-show="alertModel.loading">
+            <div class="weui-mask_transparent"></div>
+            <div class="weui-toast">
+                <i class="weui-loading weui-icon_toast"></i>
+                <p class="weui-toast__content">上传中</p>
+            </div>
+        </div>
+        <!--按钮提示框-->
+        <!--BEGIN dialog2-->
+        <div class="js_dialog" id="iosDialog2" v-show="alertModel.dialog">
+            <div class="weui-mask"></div>
+            <div class="weui-dialog">
+                <div class="weui-dialog__bd">{{dialogTxt}}</div>
+                <div class="weui-dialog__ft">
+                    <a href="javascript:;" class="weui-dialog__btn weui-dialog__btn_primary" @click="alertModel.dialog = false">知道了</a>
+                </div>
+            </div>
+        </div>
 
         <div class="tipBox" v-show="tipModel.tipStatus">
             <div class="tibBox_inner">
                 <p v-html="tipModel.tipTxt"></p>
             </div>
-        </div> 
+        </div>
     </div>
     <script src="js/zepto.min.js"></script>
     <script type="text/javascript">
         var basep = "images/", //图片目录
             preLoadSource = [ //背景资源
-                
+
             ];
     </script>
     <script src="js/loading.js"></script>
     <script src="js/vue.min.js"></script>
     <script>
-		//加载资源数组必须在loading之前进行配置
-        
+        //加载资源数组必须在loading之前进行配置
+        function showPreview(source) {  
+            var file = source.files[0];  
+            if(window.FileReader) {  
+                var fr = new FileReader();  
+                fr.onloadend = function(e) {  
+                    document.getElementById("portrait").src = e.target.result;  
+                };  
+                fr.readAsDataURL(file);  
+            }  
+        } 
         var isComing = 0;  //0代表false 表示没有参加过答题。 1为true表示已参加过答题 , 2为已绑定，但未答题
-        $(function(){
+        $(function () {
             new Vue({
-                el:"#index-box",
-                data:{
-                    tipModel:{
-                        tipStatus:false, //提示框状态
-                        tipTxt:''
+                el: "#index-box",
+                data: {
+                    tipModel: {
+                        tipStatus: false, //提示框状态
+                        tipTxt: ''
                     },
-                    bindNum:1,        //是否绑定  0未绑定 1绑定
-
-                    pageStatus:{
+                    alertModel: {
+                        lotterySuccess: false,  //中奖弹框
+                        lotteryShow: false,    //中奖展示弹框
+                        loading:false,         //上传弹框
+                        dialog:false,           //带按钮的提示框
+                        
+                    },
+                    dialogTxt:'',          //提示语
+                    infoData: {  //个人信息
+                        isBind: null,        //是否绑定   0未绑定  1绑定
+                        isTransfer: null,    //是否转账
+                        isDraw: null,        //是否领奖
+                        isFace: null,        //是否已进行过人脸识别
+                        isPrize: null,       //是否中奖
+                        isPrizeName: null,   //中奖礼物名称
+                        prizeLevel: null,    //中的第几等奖
+                    },
+                    pageStatus: { //page显示
                         onePage: true,
                         twoPage: false,
                         threePage: false
@@ -211,131 +264,200 @@
                         isBind: false,   //绑定弹框状态
 
                     },
-                    face:{
-                        num:0,                        
-                        result:false
+                    base64:null,
+                    face: {
+                        num: 0,
+                        result: false
                     },
-                    randomNum:null,
-                    classPage:[   
-                            ["one","two","three"],
-                            ["one","three","two"],
-                            ["two","one","three"],
-                            ["two","three","one"],
-                            ["three","one","two"],
-                            ["three","two","one"]
-                        ],
-                    lottery:{ 
-                        start:false,   //未抽奖
-                        num:null,         //默认为不中奖，1为迪士尼，2为咖啡券，3为现金红包
-                        
-                        
+                    randomNum: null,
+                    classPage: [
+                        ["one", "two", "three"],
+                        ["one", "three", "two"],
+                        ["two", "one", "three"],
+                        ["two", "three", "one"],
+                        ["three", "one", "two"],
+                        ["three", "two", "one"]
+                    ],
+                    lottery: {
+                        start: false,   //未抽奖
+                        num: null,         //默认为不中奖，1为迪士尼，2为咖啡券，3为现金红包
+
+
                     }
                 },
-                methods:{
-                    startHandle:function(){      //开始游戏
-                        if(this.bindNum == 1){   //已绑定
-                            this.pageStatus.twoPage = true;
-                            this.pageStatus.onePage = false;
-                        }else{   //未绑定
-                            this.status.isBind = true;
+                methods: {
+                    startHandle: function () {      //开始游戏
+                        var This = this;
+                        /*未绑定*/
+                        if (This.infoData.isBind == 0) {
+                            This.status.isBind = true;
+                        } else {
+                            This.pageStatus.twoPage = true;
+                            This.pageStatus.onePage = false;
+                        }
+                        /*已绑定，已人脸识别*/
+                        if (This.infoData.isBind == 1 && This.infoData.isFace == 1) {
+                            This.pageStatus.onePage = false;
+                            This.pageStatus.threePage = true;
                         }
                     },
-                    lotteryHandle:function(){   //点击去抽奖
+                    lotteryHandle: function () {   //点击去抽奖
                         this.pageStatus.twoPage = false;
                         this.pageStatus.threePage = true;
                     },
-                    startLottery:function(){    //点击开始抽奖
+                    startLottery: function () {    //点击开始抽奖
                         var This = this;
+                        
+                        $.ajax({
+                            url: 'http://wx.xhwxpos.com/bank_gift/index.php?m=Wap&c=Index&a=ajax_lottery&debug=1',
+                            dataType: 'json',
+                            type: 'post',
+                            data: {},
+                            async: true,
+                            success: function (res) {
+                                if (res.status == 0) {   //上传识别正常
+
+                                } else {     //不正常                                    
+                                    This.alertModel.dialog = true;
+                                    This.dialogTxt = res.msg
+                                }
+                            },
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                console.log(XMLHttpRequest)
+                            }
+                        })
+                        /*抽奖之后的回调函数*/
                         this.lottery.start = true;
-                        setTimeout(function(){
+                        setTimeout(function () {
                             This.lottery.num = 0;
-                            if(This.lottery.num == 0){
-                                This.randomNum = This.randomHandle(5,0);
+                            if (This.lottery.num == 0) {
+                                This.randomNum = This.randomHandle(5, 0);
                             }
                             This.lottery.start = false;
                             console.log("恭喜您中奖了");
-                        },1000)
+                        }, 1000)
                     },
-                    submitHandle:function(){
-                        var That = this;
-                        if(this.number == "" || this.id_num == ""){
-                            this.tipStatus = true;
-                            this.tipTxt = "请填写<br/>完整信息";
-                            setTimeout(function(){
-                                That.tipStatus = false;
-                            },1000)
-                            return false;
-                        }
-                        if(this.id_num.toString().length  != 6){
-                            this.tipStatus = true;
-                            this.tipTxt = "请输入<br/>身份证后六位";
-                            setTimeout(function(){
-                                That.tipStatus = false;
-                            },1000)
-                            return false;
-                        }
-
-                        this.tipStatus = true;
-                        this.tipTxt = "数据<br/>提交中";
-                        $.ajax({
-                                url:'http://wx.xhwxpos.com/questionnaire/index.php?m=Wap&c=Index&a=index&debug=1',
-                                dataType:'json',
-                                type:'post',
-                                data:{
-                                    "number":That.number.toString(),
-                                    "id_num":That.id_num.toString()
-                                },
-                                async:true,
-                                success:function(res){
-                                    if(res.sta == 0){   //正常
-                                        That.tipStatus = false;    //提示框
-                                        That.infoStatus = false;   //信息框
-                                        That.slide01Status = true;
-                                    }else{     //不正常
-                                        That.tipStatus = true;    //提示框
-                                        That.tipTxt=res.msg;
-                                        setTimeout(function(){
-                                            That.tipStatus = false;
-                                        },1000)
-                                    }                                  
-                                },
-                                error:function(XMLHttpRequest, textStatus, errorThrown) {
-                                    console.log(XMLHttpRequest)
+                    showPreview(source){ 
+                        var This = this;
+                        this.alertModel.loading=true;
+                        var file = $("#file").get(0).files[0];  
+                        if (!/image\/\w+/.test(file.type)) {
+                            This.tipModel={
+                                tipStatus:true,
+                                tipTxt: '请确保上传的是图片'
+                            }
+                            setTimeout(function () {
+                                This.tipModel={
+                                    tipStatus:false,
+                                    tipTxt: ''
                                 }
-                            })
+                            }, 1000)
+                            return false;
+                        }
+                        if(window.FileReader) {  
+                            var fr = new FileReader();  
+                            fr.onloadend = function(e) {                                 
+                                // document.getElementById("portrait").src = e.target.result;
+                                This.base64 = e.target.result;                                
+                                This.uploadImg()
+                            };  
+                            fr.readAsDataURL(file);  
+                        }  
+                    }, 
+                    uploadImg(){
+                        var This = this;
+                        $.ajax({
+                            url: 'http://wx.xhwxpos.com/bank_gift/index.php?m=Wap&c=Index&a=ajax_uploadfile&debug=1',
+                            dataType: 'json',
+                            type: 'post',
+                            data: {
+                                "base64":This.base64
+                            },
+                            async: true,
+                            success: function (res) {
+                                This.alertModel.loading=false; 
+                                if (res.status == 0) {   //上传识别正常
+                                    document.getElementById("portrait").src = This.base64;
+                                    $('.photo2').animate({
+                                        top: '14.7rem'
+                                    }, 1000)
+                                    $('.photo').animate({
+                                        top: '-13rem'
+                                    }, 1000);
+                                    This.face = {
+                                        num: res.score,
+                                        result: true
+                                    }
+
+                                } else {     //不正常
+
+                                    This.alertModel.dialog = true;
+                                    This.dialogTxt = res.msg
+                                }
+                            },
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                console.log(XMLHttpRequest)
+                            }
+                        })
                     },
-                    randomHandle:function(x,y){
+                    submitHandle: function () {
+
+                    },
+                    randomHandle: function (x, y) {
                         // x是随机数上限，y是随机数下限
                         let rand = parseInt(Math.random() * (x - y + 1) + y);
                         return rand;
                     },
-                    init:function(){
+                    getInfo: function () {
                         var This = this;
-                        $(function(){
-                            $("#file").unbind().on('change',function(){
-                                $('.photo2').animate({
-                                    top:'14.7rem'
-                                },1000)
-                                $('.photo').animate({
-                                    top:'-13rem'
-                                },1000);
-                                setTimeout(function(){
-                                    This.face={
-                                        num:100,
-                                        result:true
+                        $.ajax({
+                            url: 'http://wx.xhwxpos.com/bank_gift/index.php?m=Wap&c=Index&a=ajax_get_status&debug=1',
+                            dataType: 'json',
+                            type: 'post',
+                            data: {},
+                            async: true,
+                            success: function (res) {
+                                if (res.sta == 0) {   //正常
+                                    var result = res.data;
+                                    This.infoData.isBind = result.is_binding;
+                                    This.infoData.isDraw = result.is_draw;
+                                    This.infoData.isFace = result.is_face;
+                                    This.infoData.isPrize = result.is_prize;
+                                    This.infoData.isTransfer = result.is_transfer;
+                                    This.infoData.prizeLevel = result.prize_level;
+                                    This.infoData.isBind = 1;
+                                    // This.infoData.isFace = 0;  
+                                    // This.infoData.isPrize = 1;  
+                                    // This.infoData.isDraw = 0;                                     
+
+                                    /*已中奖，未领奖*/
+                                    if (This.infoData.isPrize == 1 && This.infoData.isDraw == 0) {
+                                        This.alertModel.lotterySuccess = true;
                                     }
-                                },1000)
-                            })
+
+                                } else {     //不正常
+                                    This.alertModel.dialog = true;
+                                    This.dialogTxt = res.msg
+                                }
+                            },
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                console.log(XMLHttpRequest)
+                            }
                         })
+                    },
+                    init: function () {
+                        var This = this;
+                        this.getInfo();  //获取个人信息
                     }
                 },
-                mounted:function(){
+                mounted: function () {
                     this.init();
-                    
+
                 }
             })
         })
     </script>
-    
+
 </body>
+
 </html>
