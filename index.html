@@ -201,7 +201,7 @@
                 </div>
             </div>
         </div>
-
+        <!-- 提示框，1000消失 -->
         <div class="tipBox" v-show="tipModel.tipStatus">
             <div class="tibBox_inner">
                 <p v-html="tipModel.tipTxt"></p>
@@ -219,21 +219,18 @@
     <script src="js/vue.min.js"></script>
     <script>
         //加载资源数组必须在loading之前进行配置
-        function showPreview(source) {  
-            var file = source.files[0];  
-            if(window.FileReader) {  
-                var fr = new FileReader();  
-                fr.onloadend = function(e) {  
-                    document.getElementById("portrait").src = e.target.result;  
-                };  
-                fr.readAsDataURL(file);  
-            }  
-        } 
         var isComing = 0;  //0代表false 表示没有参加过答题。 1为true表示已参加过答题 , 2为已绑定，但未答题
         $(function () {
             new Vue({
                 el: "#index-box",
                 data: {
+                    linkHref:{
+                        bind:'http://wx.xhwxpos.com/bank_gift/index.php?m=Wap&c=Index&a=ajax_get_status&debug=1',  
+                        upload:'http://wx.xhwxpos.com/bank_gift/index.php?m=Wap&c=Index&a=ajax_uploadfile&debug=1',
+                        lottery:'http://wx.xhwxpos.com/bank_gift/index.php?m=Wap&c=Index&a=ajax_lottery&debug=1',
+                        mobileSub:'http://wx.xhwxpos.com/bank_gift/index.php?m=Wap&c=Index&a=ajax_commit_mobile&debug=1',
+                        redPack:'http://wx.xhwxpos.com/bank_gift/index.php?m=Wap&c=Index&a=ajax_draw&debug=1'
+                    },
                     tipModel: {
                         tipStatus: false, //提示框状态
                         tipTxt: ''
@@ -249,7 +246,7 @@
                         info:false,             //介绍弹框
                         
                     },
-                    dialogTxt:'',          //提示语
+                    dialogTxt:'',           //提示语
                     infoData: {  //个人信息
                         isBind: null,        //是否绑定   0未绑定  1绑定
                         isTransfer: null,    //是否转账
@@ -259,7 +256,7 @@
                         isPrizeName: null,   //中奖礼物名称
                         prizeLevel: null,    //中的第几等奖
                     },
-                    pageStatus: { //page显示
+                    pageStatus: {   //page显示
                         onePage: true,
                         twoPage: false,
                         threePage: false
@@ -269,7 +266,7 @@
 
                     },
                     base64:null,
-                    face: {
+                    face: {   //人脸识别参数
                         num: 0,
                         result: false
                     },
@@ -317,7 +314,7 @@
                         var This = this;
                         this.lottery.start = true;
                         $.ajax({
-                            url: 'http://wx.xhwxpos.com/bank_gift/index.php?m=Wap&c=Index&a=ajax_lottery&debug=1',
+                            url: This.linkHref.lottery,
                             dataType: 'json',
                             type: 'post',
                             data: {},
@@ -336,8 +333,7 @@
                                     }, 1000)
 
                                 } else {     //不正常                                    
-                                    This.alertModel.dialog = true;
-                                    This.dialogTxt = res.msg
+                                    This.showDialog(res.msg);
                                 }
                             },
                             error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -352,21 +348,12 @@
                         },300)
 
                     },
-                    showPreview(source){ 
+                    showPreview(source){  //上传头像转base64
                         var This = this;
                         this.alertModel.loading=true;
                         var file = $("#file").get(0).files[0];  
                         if (!/image\/\w+/.test(file.type)) {
-                            This.tipModel={
-                                tipStatus:true,
-                                tipTxt: '请确保上传的是图片'
-                            }
-                            setTimeout(function () {
-                                This.tipModel={
-                                    tipStatus:false,
-                                    tipTxt: ''
-                                }
-                            }, 1000)
+                            This.showDialog('上传文件必须是图片');
                             return false;
                         }
                         if(window.FileReader) {  
@@ -379,10 +366,10 @@
                             fr.readAsDataURL(file);  
                         }  
                     }, 
-                    uploadImg(){
+                    uploadImg(){    //上传照片
                         var This = this;
                         $.ajax({
-                            url: 'http://wx.xhwxpos.com/bank_gift/index.php?m=Wap&c=Index&a=ajax_uploadfile&debug=1',
+                            url: This.linkHref.upload,
                             dataType: 'json',
                             type: 'post',
                             data: {
@@ -395,11 +382,11 @@
                                 if (res.status == 0) {   //上传识别正常
                                     document.getElementById("portrait").src = This.base64;
                                     $('.photo2').animate({
-                                        top: '14.7rem'
-                                    }, 1000)
+                                                    top: '14.7rem'
+                                                }, 1000)
                                     $('.photo').animate({
-                                        top: '-13rem'
-                                    }, 1000);
+                                                    top: '-13rem'
+                                                }, 1000);
                                     This.face = {
                                         num: res.score,
                                         result: true
@@ -407,8 +394,7 @@
 
                                 } else {     //不正常
 
-                                    This.alertModel.dialog = true;
-                                    This.dialogTxt = "检测不到人脸,请重新上传"
+                                    This.showDialog('检测不到人脸，请重新上传');
                                 }
                             },
                             error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -416,20 +402,11 @@
                             }
                         })
                     },
-                    validate(){
+                    validate(){   //验证手机号码是否正确
                         var This = this;
                         var validate = this.isPhone(this.lottery.phone);
                         if(!validate){
-                            This.tipModel={
-                                tipStatus:true,
-                                tipTxt: '手机号码不正确'
-                            }
-                            setTimeout(function () {
-                                This.tipModel={
-                                    tipStatus:false,
-                                    tipTxt: ''
-                                }
-                            }, 1000)
+                            This.showDialog('手机号码格式不正确');
                             return false;
                         };
                         this.alertModel.lotterySuccess = false;
@@ -442,7 +419,7 @@
                     submitMobileHandle: function () {
                         var This = this;
                         $.ajax({
-                            url: 'http://wx.xhwxpos.com/bank_gift/index.php?m=Wap&c=Index&a=ajax_commit_mobile&debug=1',
+                            url:This.linkHref.mobileSub,
                             dataType: 'json',
                             type: 'post',
                             data: {
@@ -456,9 +433,7 @@
                                     This.alertModel.phoneShow = false;
                                     This.alertModel.lotteryShow = true;
                                 } else {     //不正常
-                                    This.alertModel.dialog = true;
-                                    This.dialogTxt = res.msg; 
-
+                                    This.showDialog(res.msg)
                                 }
                             },
                             error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -466,10 +441,10 @@
                             }
                         })
                     },
-                    rewardRedPack(){
+                    rewardRedPack(){   //开红包
                         var This = this;
                         $.ajax({
-                            url: 'http://wx.xhwxpos.com/bank_gift/index.php?m=Wap&c=Index&a=ajax_draw&debug=1',
+                            url: This.linkHref.redPack,
                             dataType: 'json',
                             type: 'post',
                             data: {},
@@ -480,9 +455,7 @@
                                     This.alertModel.lotterySuccess = false;
                                     This.alertModel.lotteryShow = true;
                                 } else {     //不正常
-                                    This.alertModel.dialog = true;
-                                    This.dialogTxt = res.msg; 
-
+                                    This.showDialog(res.msg)
                                 }
                             },
                             error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -498,7 +471,7 @@
                     getInfo: function () {
                         var This = this;
                         $.ajax({
-                            url: 'http://wx.xhwxpos.com/bank_gift/index.php?m=Wap&c=Index&a=ajax_get_status&debug=1',
+                            url: This.linkHref.bind,
                             dataType: 'json',
                             type: 'post',
                             data: {},
@@ -506,12 +479,12 @@
                             success: function (res) {
                                 if (res.sta == 0) {   //正常
                                     var result = res.data;
-                                    This.infoData.isBind = result.is_binding;
-                                    This.infoData.isDraw = result.is_draw;
-                                    This.infoData.isFace = result.is_face;
-                                    This.infoData.isPrize = result.is_prize;
-                                    This.infoData.isTransfer = result.is_transfer;
-                                    This.infoData.prizeLevel = result.prize_level;  //次数据后台未返回                             
+                                    This.infoData.isBind = result.is_binding = 1;
+                                    This.infoData.isDraw = result.is_draw = 0;
+                                    This.infoData.isFace = result.is_face = 0;
+                                    This.infoData.isPrize = result.is_prize = 0;
+                                    This.infoData.isTransfer = result.is_transfer = 0;
+                                    This.infoData.prizeLevel = result.prize_level = 0;  //次数据后台未返回                             
 
                                     /*已中奖，未领奖*/
                                     if (This.infoData.isPrize == 1 && This.infoData.isDraw == 0) {
@@ -519,8 +492,7 @@
                                     }
 
                                 } else {     //不正常
-                                    This.alertModel.dialog = true;
-                                    This.dialogTxt = res.msg
+                                    This.showDialog(res.msg)
                                 }
                             },
                             error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -533,6 +505,10 @@
                             str = str.toString();
                         }
                         return /^0?1[3|4|5|7|8][0-9]\d{8}$/.test(str);
+                    },
+                    showDialog(msg){
+                        this.alertModel.dialog = true;
+                        this.dialogTxt = msg
                     },
                     init: function () {
                         var This = this;
