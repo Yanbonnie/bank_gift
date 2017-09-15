@@ -122,6 +122,7 @@
                     <span class="bq_img">
                         <img :src="gift.img[gift.num]" alt="">                        
                     </span>
+                    <p v-if="lottery.num == 3">{{gift.money}}</p>
                     <p v-html="gift.txt[gift.num]">迪士尼电子门票<br>将发送至该手机号码</p>
                     <!--costa咖啡券<br>将发送至该手机号码    -->
                 </div>                
@@ -286,8 +287,9 @@
                     },
                     gift:{
                         num:null,
+                        money:100,
                         img:['','images/win_1.png','images/win_2.png','images/win_3.png'],
-                        txt:['','迪士尼电子门票<br>将发送至该手机号码','costa咖啡券<br>将发送至该手机号码','红包金额<br>已存入您的微信钱包']
+                        txt:['','迪士尼电子门票<br>将发送至该手机号码','costa咖啡券<br>将发送至该手机号码','已存入您的微信钱包']
                     }
                 },
                 methods: {
@@ -322,7 +324,7 @@
                             success: function (res) {
                                 if (res.sta == 0) {   //抽奖成功
                                     setTimeout(function () {
-                                        This.lottery.num = This.infoData.prizeLevel = res.prize_level;
+                                        This.lottery.num = This.infoData.prizeLevel = res.prize_level;  //中几等奖
                                         This.infoData.isPrize = res.is_prize;
                                         This.lottery.start = false;
                                         if (This.lottery.num == 0) {   //没中奖，随机结果
@@ -452,6 +454,7 @@
                             success: function (res) {
                                 if (res.sta == 0) {   //领取成功
                                     This.gift.num = 3;
+                                    This.gift.money = 100;
                                     This.alertModel.lotterySuccess = false;
                                     This.alertModel.lotteryShow = true;
                                 } else {     //不正常
@@ -479,12 +482,12 @@
                             success: function (res) {
                                 if (res.sta == 0) {   //正常
                                     var result = res.data;
-                                    This.infoData.isBind = result.is_binding = 1;
-                                    This.infoData.isDraw = result.is_draw = 0;
-                                    This.infoData.isFace = result.is_face = 0;
-                                    This.infoData.isPrize = result.is_prize = 0;
-                                    This.infoData.isTransfer = result.is_transfer = 0;
-                                    This.infoData.prizeLevel = result.prize_level = 0;  //次数据后台未返回                             
+                                    This.infoData.isBind = result.is_binding;
+                                    This.infoData.isDraw = result.is_draw;
+                                    This.infoData.isFace = result.is_face;
+                                    This.infoData.isPrize = result.is_prize;
+                                    This.infoData.isTransfer = result.is_transfer;
+                                    This.infoData.prizeLevel = result.prize_level;  //次数据后台未返回                             
 
                                     /*已中奖，未领奖*/
                                     if (This.infoData.isPrize == 1 && This.infoData.isDraw == 0) {
