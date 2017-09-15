@@ -391,6 +391,7 @@
                             async: true,
                             success: function (res) {
                                 This.alertModel.loading=false; 
+
                                 if (res.status == 0) {   //上传识别正常
                                     document.getElementById("portrait").src = This.base64;
                                     $('.photo2').animate({
@@ -407,7 +408,7 @@
                                 } else {     //不正常
 
                                     This.alertModel.dialog = true;
-                                    This.dialogTxt = res.msg
+                                    This.dialogTxt = "检测不到人脸,请重新上传"
                                 }
                             },
                             error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -510,8 +511,7 @@
                                     This.infoData.isFace = result.is_face;
                                     This.infoData.isPrize = result.is_prize;
                                     This.infoData.isTransfer = result.is_transfer;
-                                    This.infoData.prizeLevel = result.prize_level;  //次数据后台未返回
-                                    // This.infoData.isBind = 1;                                
+                                    This.infoData.prizeLevel = result.prize_level;  //次数据后台未返回                             
 
                                     /*已中奖，未领奖*/
                                     if (This.infoData.isPrize == 1 && This.infoData.isDraw == 0) {
