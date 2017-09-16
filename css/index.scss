@@ -35,7 +35,7 @@ img{
     .page1{
         width: 100%;
         height:100%;
-        background: url($URL+'index_bg.jpg') no-repeat #dcf1fc;
+        background: url($URL+'index_bg.jpg') no-repeat #dcf1fc center -35px;
         @include prefixer(background-size,100% auto);
         position: absolute;
         left: 0;
@@ -44,7 +44,7 @@ img{
         .logo{
             width: REM(481);
             position: absolute;
-            top: REM(50);
+            top: REM(30);
             left: 50%;
             margin-left: REMTWO(481);
         }
@@ -54,14 +54,14 @@ img{
             position: absolute;
             left:50%;
             margin-left: REMTWO(540);
-            top: REM(285);
+            top: REM(215);
         }
         .startBtn{
             width: REM(217);
             height: REM(87);
             position: absolute;
             left: 50%;
-            top: REM(1170);
+            top: REM(1070);
             margin-left: REMTWO(217);
         }
     }
@@ -510,9 +510,12 @@ img{
 .infoModel{
     background: #1f1c3f;    
     .modelBox{
-        width:REM(579);
+        width:REM(500);
         padding: 0;
         background:none;
+        top: 50%;
+        left: 50%;
+        @include prefixer(transform,translate(-50%,-45%));
     }
 }
 //分享到朋友圈

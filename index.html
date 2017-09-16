@@ -87,9 +87,9 @@
         <!--中奖成功失败弹框  -->
         <div class="giftMore model" v-show="alertModel.lotterySuccess">
             <div class="modelBox">
-                <!-- <span class="close">
+                <span class="close" v-show="infoData.prizeLevel == 0" @click="alertModel.lotterySuccess = false">
                     <img src="images/close.png" alt="">
-                </span> -->
+                </span>
                 <div class="whiteBox">
                     <!-- <span class="bq_img" v-if="infoData.prizeLevel !==  0"><img src="images/win_1.png" alt=""></span> -->
                     <div class="title" v-if="infoData.prizeLevel != 0"><img src="images/gx_title.png" alt=""></div>
@@ -109,7 +109,7 @@
                     <p v-if="infoData.prizeLevel == 0">很遗憾您没有中奖 <br>再接再励吧</p>
                     <input v-if="infoData.prizeLevel == 1 || infoData.prizeLevel == 2 " v-model.number="lottery.phone" type="text" placeholder="请输入手机号码">
                 </div>
-                <a href="javascript:;" class="submit" v-if="infoData.prizeLevel != 3" @click="validate">提交</a>
+                <a href="javascript:;" class="submit" v-if="infoData.prizeLevel == 1 || infoData.prizeLevel == 2" @click="validate">提交</a>
             </div>
         </div>
         <!-- 中奖展示弹框 -->
@@ -324,7 +324,7 @@
                             success: function (res) {
                                 if (res.sta == 0) {   //抽奖成功
                                     setTimeout(function () {
-                                        This.lottery.num = This.infoData.prizeLevel = res.prize_level;  //中几等奖
+                                        This.lottery.num = This.infoData.prizeLevel = res.prize_level =2;  //中几等奖
                                         This.infoData.isPrize = res.is_prize;
                                         This.lottery.start = false;
                                         if (This.lottery.num == 0) {   //没中奖，随机结果
@@ -336,6 +336,8 @@
 
                                 } else {     //不正常                                    
                                     This.showDialog(res.msg);
+                                    This.lottery.start = false;
+                                    This.randomNum = This.randomHandle(5, 0);
                                 }
                             },
                             error: function (XMLHttpRequest, textStatus, errorThrown) {
