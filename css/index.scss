@@ -238,6 +238,18 @@ img{
                 left: 72%;
                 top: 27rem
             }
+            .balance{
+                width: 3rem;
+                height: 2rem;
+                position: absolute;
+                left: 55%;
+                top: 22.3rem;
+                // background: rgba(0,0,0,0.5);
+                text-align: center;
+                font-size: REM(24);
+                color: #ffffff;
+                line-height: 2rem;
+            }
         }
     }
 }

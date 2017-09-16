@@ -48,6 +48,7 @@
                 </div>
                 <span class="startLottery" @click="startLottery"></span>
                 <span class="more" @click="alertModel.more = true"></span>
+                <span class="balance">{{lottery.balance}}</span>
             </div>
         </div>
 
@@ -260,7 +261,7 @@
                     pageStatus: {   //page显示
                         onePage: true,
                         twoPage: false,
-                        threePage: false
+                        threePage: true
                     },
                     status: {
                         isBind: false,   //绑定弹框状态
@@ -284,6 +285,7 @@
                         start: false,      //未抽奖
                         num: null,         //默认为不中奖，1为迪士尼，2为咖啡券，3为现金红包
                         phone:null,        //中奖手机号
+                        balance:null,      //余额
                     },
                     gift:{
                         num:null,
@@ -325,6 +327,7 @@
                                 if (res.sta == 0) {   //抽奖成功
                                     setTimeout(function () {
                                         This.lottery.num = This.infoData.prizeLevel = res.prize_level =2;  //中几等奖
+                                        This.lottery.balance = 100;
                                         This.infoData.isPrize = res.is_prize;
                                         This.lottery.start = false;
                                         if (This.lottery.num == 0) {   //没中奖，随机结果
