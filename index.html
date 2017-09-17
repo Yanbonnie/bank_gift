@@ -26,7 +26,7 @@
                         <img id="portrait" src="" >  
                     </div>
                     <a v-show="!face.result" href="javascript:;" class="upload_img btn">上传图片
-                        <input  type="file" name="file" id="file" @change="showPreview(this)"/>
+                        <input  type="file" name="file" id="file" @change="showPreview(1)"/>
                     </a>
                     <div v-show="face.result" class="photo_result">
                         <p>您的颜值为{{face.num}}</p>
@@ -48,6 +48,7 @@
                 </div>
                 <span class="startLottery" @click="startLottery"></span>
                 <span class="more" @click="alertModel.more = true"></span>
+                <span class="balance">{{lottery.balance}}</span>
             </div>
         </div>
 
@@ -158,16 +159,20 @@
                 </span>
                 <div class="whiteBox">
                     <span class="bq_img">
-                        <img src="images/tangle.png" alt=""> <!--images/cry.png   images/smile.png-->
+                        <img src="images/cry.png" alt=""> <!--images/tangle.png images/cry.png   images/smile.png-->
                     </span>
-                    <p>您已获取过照片颜值分</p>
-                    <!--您的颜值不足<br>速去加颜值     您这周颜值已达到顶峰<br>下周再来吧-->
+                    <p>不好意思哦<br>没有检测到您的人脸</p>
+                    <!--您已获取过照片颜值分 您的颜值不足<br>速去加颜值     您这周颜值已达到顶峰<br>下周再来吧-->
                 </div>
-                <a href="javascript:;" class="submit">返回</a>
+                <a v-show="!face.result" href="javascript:;" class="upload_img btn">重新上传图片
+                    <input  type="file" id="file2" name="file"  @change="showPreview(2)"/>
+                </a>
+                <!-- <a href="javascript:;" class="submit">重新上传照片</a> -->
+                <!-- <a href="javascript:;" class="submit">返回</a>
                 <div class="btn-box">
                     <a href="javascript:;">拒绝</a>
                     <a href="javascript:;">确定</a>
-                </div>
+                </div> -->
             </div>
         </div>
         <!--介绍页  -->
@@ -284,6 +289,7 @@
                         start: false,      //未抽奖
                         num: null,         //默认为不中奖，1为迪士尼，2为咖啡券，3为现金红包
                         phone:null,        //中奖手机号
+                        balance:null,      //余额
                     },
                     gift:{
                         num:null,
@@ -325,6 +331,7 @@
                                 if (res.sta == 0) {   //抽奖成功
                                     setTimeout(function () {
                                         This.lottery.num = This.infoData.prizeLevel = res.prize_level =2;  //中几等奖
+                                        This.lottery.balance = 100;
                                         This.infoData.isPrize = res.is_prize;
                                         This.lottery.start = false;
                                         if (This.lottery.num == 0) {   //没中奖，随机结果
@@ -355,7 +362,13 @@
                     showPreview(source){  //上传头像转base64
                         var This = this;
                         this.alertModel.loading=true;
-                        var file = $("#file").get(0).files[0];  
+                        var file = null;
+                        if(source == 1){
+                            file = $("#file").get(0).files[0];  
+                        }else{
+                            file = $("#file2").get(0).files[0];  
+                            This.alertModel.face = false;
+                        }
                         if (!/image\/\w+/.test(file.type)) {
                             This.showDialog('上传文件必须是图片');
                             return false;
@@ -398,7 +411,8 @@
 
                                 } else {     //不正常
 
-                                    This.showDialog('检测不到人脸，请重新上传');
+                                    // This.showDialog('检测不到人脸，请重新上传');
+                                    This.alertModel.face = true;
                                 }
                             },
                             error: function (XMLHttpRequest, textStatus, errorThrown) {
