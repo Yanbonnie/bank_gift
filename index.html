@@ -48,7 +48,8 @@
                 </div>
                 <span class="startLottery" @click="startLottery"></span>
                 <span class="more" @click="alertModel.more = true"></span>
-                <span class="balance">{{lottery.balance}}</span>
+                <!-- <span class="balance">{{lottery.balance}}</span> -->
+                <span class="balance">{{face.score}}</span>
             </div>
         </div>
 
@@ -66,6 +67,21 @@
 
             </div>
         </div>
+
+        <!-- 第一次进入提示 -->
+        <div class="firstEnter model" v-show="comingState" >
+            <div class="modelBox">
+                <span class="close" @click="comingState = false">
+                    <img src="images/close.png" alt="">
+                </span>
+                <div class="whiteBox">
+                    <p>即日起-10月31日，绑定我行微信银行完成人脸照片上传即可获取相应“颜值分”参与抽奖，有机会赢取迪士尼电子门票、costa咖啡兑换券、现金红包等丰富奖品。</p>
+                </div>
+
+            </div>
+        </div>
+
+        
         <!--点击获取更多弹框  -->
         <div class="getMore model" v-show="alertModel.more">
             <div class="modelBox">
@@ -241,6 +257,7 @@
                         tipStatus: false, //提示框状态
                         tipTxt: ''
                     },
+                    comingState:false,
                     alertModel: {
                         lotterySuccess: false,  //中奖弹框
                         lotteryShow: false,     //中奖展示弹框
@@ -293,7 +310,7 @@
                     },
                     gift:{
                         num:null,
-                        money:100,
+                        money:null,
                         img:['','images/win_1.png','images/win_2.png','images/win_3.png'],
                         txt:['','迪士尼电子门票<br>将发送至该手机号码','costa咖啡券<br>将发送至该手机号码','已存入您的微信钱包']
                     }
@@ -320,6 +337,10 @@
                     },
                     startLottery: function () {    //点击开始抽奖
                         var This = this;
+                        if(this.face.score < 25){
+                        	This.showDialog('您的余额不够，不能抽奖');
+                        	return false;
+                        }
                         this.lottery.start = true;
                         $.ajax({
                             url: This.linkHref.lottery,
@@ -330,9 +351,10 @@
                             success: function (res) {
                                 if (res.sta == 0) {   //抽奖成功
                                     setTimeout(function () {
-                                        This.lottery.num = This.infoData.prizeLevel = res.prize_level =2;  //中几等奖
-                                        This.lottery.balance = 100;
+                                        This.lottery.num = This.infoData.prizeLevel = res.prize_level;  //中几等奖
+                                        // This.lottery.balance = 100;
                                         This.infoData.isPrize = res.is_prize;
+                                        This.gift.money = res.money;
                                         This.lottery.start = false;
                                         if (This.lottery.num == 0) {   //没中奖，随机结果
                                             This.randomNum = This.randomHandle(5, 0);
@@ -470,7 +492,7 @@
                             success: function (res) {
                                 if (res.sta == 0) {   //领取成功
                                     This.gift.num = 3;
-                                    This.gift.money = 100;
+                                    // This.gift.money = 100;
                                     This.alertModel.lotterySuccess = false;
                                     This.alertModel.lotteryShow = true;
                                 } else {     //不正常
@@ -503,7 +525,10 @@
                                     This.infoData.isFace = result.is_face;
                                     This.infoData.isPrize = result.is_prize;
                                     This.infoData.isTransfer = result.is_transfer;
-                                    This.infoData.prizeLevel = result.prize_level;  //次数据后台未返回                             
+                                    This.infoData.prizeLevel = result.prize_level;  //此数据后台未返回       
+                                    // This.lottery.balance = result.balance;         
+                                    This.face.score = result.score;                 //余额   
+                                    This.gift.money = result.money;                 //如果是中奖红包的话，中奖金额                   
 
                                     /*已中奖，未领奖*/
                                     if (This.infoData.isPrize == 1 && This.infoData.isDraw == 0) {
@@ -529,6 +554,12 @@
                         this.alertModel.dialog = true;
                         this.dialogTxt = msg
                     },
+                    setLSData:function(key, value){
+                        localStorage.setItem(key, JSON.stringify(value));
+                    },
+                    getLSData:function(key){
+                        return JSON.parse(localStorage.getItem(key));
+                    },
                     init: function () {
                         var This = this;
                         this.getInfo();  //获取个人信息
@@ -536,6 +567,13 @@
                 },
                 mounted: function () {
                     this.init();
+                    var localData = this.getLSData('isComeIn');
+                    if(!localData){   //不存在
+                        this.comingState = true;
+                        this.setLSData('isComeIn',1);
+                    }else{
+                        this.comingState = false;
+                    }
 
                 }
             })
