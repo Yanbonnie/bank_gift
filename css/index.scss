@@ -56,6 +56,14 @@ img{
             margin-left: REMTWO(540);
             top: REM(215);
         }
+        p.info{
+            width: 90%;
+            position: absolute;
+            top: REM(1000);
+            color: #2278bf;
+            font-size: REM(24);
+            left: 5%;
+        }
         .startBtn{
             width: REM(217);
             height: REM(87);
