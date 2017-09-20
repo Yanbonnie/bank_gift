@@ -26,7 +26,7 @@
                         <img id="portrait" src="" >  
                     </div>
                     <a v-show="!face.result" href="javascript:;" class="upload_img btn">上传图片
-                        <input  type="file" name="file" id="file" @change="showPreview(1)"/>
+                        <!-- <input  type="file" name="file" id="file" @change="showPreview(1)"/> -->
                     </a>
                     <div v-show="face.result" class="photo_result">
                         <p>您的颜值为{{face.num}}</p>
@@ -168,6 +168,7 @@
             </div>
         </div>
         <!-- 颜值提示弹框  -->
+        <!--  -->
         <div class="faceModel model" v-show="alertModel.face">
             <div class="modelBox">
                 <span class="close" @click="alertModel.face = false">
@@ -175,20 +176,19 @@
                 </span>
                 <div class="whiteBox">
                     <span class="bq_img">
-                        <img src="images/cry.png" alt=""> <!--images/tangle.png images/cry.png   images/smile.png-->
+                        <img :src="face.img[face.index]" alt=""> <!--images/tangle.png images/cry.png   images/smile.png-->
                     </span>
-                    <p>不好意思哦<br>没有检测到您的人脸</p>
+                    <p v-html="face.txt[face.index]">不好意思哦<br>没有检测到您的人脸</p>
                     <!--您已获取过照片颜值分 您的颜值不足<br>速去加颜值     您这周颜值已达到顶峰<br>下周再来吧-->
                 </div>
-                <a v-show="!face.result" href="javascript:;" class="upload_img btn">重新上传图片
+                <a v-show="!face.result && face.index == 1" href="javascript:;" class="upload_img btn">重新上传图片
                     <input  type="file" id="file2" name="file"  @change="showPreview(2)"/>
-                </a>
-                <!-- <a href="javascript:;" class="submit">重新上传照片</a> -->
-                <!-- <a href="javascript:;" class="submit">返回</a>
-                <div class="btn-box">
-                    <a href="javascript:;">拒绝</a>
-                    <a href="javascript:;">确定</a>
-                </div> -->
+                </a>                
+                <div class="btn-box" v-if="face.index == 2">
+                    <a href="javascript:;"  @click="alertModel.face = false">拒绝</a>
+                    <a href="javascript:;"  @click="sureHandle">确定</a> 
+                </div> 
+                <a href="javascript:;" v-if="face.index == 3" class="submit">返回</a>
             </div>
         </div>
         <!--介绍页  -->
@@ -291,7 +291,10 @@
                     base64:null,
                     face: {   //人脸识别参数
                         num: 0,
-                        result: false
+                        result: false,
+                        index:0,    //颜值弹框的index
+                        txt:["","不好意思哦<br>没有检测到您的人脸","您的颜值不足<br>速去加颜值","您已获取过照片颜值分","您这周颜值已达到顶峰<br>下周再来吧"],    //颜值弹框提示语
+                        img:["","images/cry.png","images/cry.png","images/tangle.png","images/smile.png"]
                     },
                     randomNum: null,
                     classPage: [
@@ -338,7 +341,9 @@
                     startLottery: function () {    //点击开始抽奖
                         var This = this;
                         if(this.face.score < 25){
-                        	This.showDialog('您的余额不够，不能抽奖');
+                        	//This.showDialog('您的余额不够，不能抽奖');
+                            This.alertModel.face = true;
+                            This.face.index = 2;
                         	return false;
                         }
                         this.lottery.start = true;
@@ -435,12 +440,52 @@
 
                                     // This.showDialog('检测不到人脸，请重新上传');
                                     This.alertModel.face = true;
+                                    This.face.index = 1;
                                 }
                             },
                             error: function (XMLHttpRequest, textStatus, errorThrown) {
                                 console.log(XMLHttpRequest)
                             }
                         })
+                    },
+                    wxUpLoadImg(){
+                        wx.chooseImage({
+                            count: 1,
+                            sizeType:['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+                            sourceType: ['album', 'camera'],     // 可以指定来源是相册还是相机，默认二者都有
+                            success:function(res){
+                                images.localId = res.localIds;   // 返回选定照片的本地ID列表，localId可以作为img标签的src属性显示图片
+                                var i = 0, length = images.localId.length;
+                                document.getElementById('show615').src = images.localId;
+                                var wxUpload = function() {
+                                    wx.uploadImage({
+                                        localId: images.localId[i], // 需要上传的图片的本地ID，由chooseImage接口获得
+                                        isShowProgressTips: 1, // 默认为1，显示进度提示
+                                        success: function (res) {
+                                            alert(JSON.stringify(res))
+                                            /*i++;
+                                            //将上传成功后的serverId保存到serverid
+                                            images.serverId.push(res.serverId);
+                                            //(serverId 即 media_id,公众号此后可根据该media_id来获取多媒体)将上传的图片通过AJAX远程提交给php下载到本地服务器
+                                            var url = "./index.php?i=3&c=entry&type=image&do=uploads&m=dayu_form&serverId=" + res.serverId + "&localId=" + i;
+                                            $.post(url, function(dat){
+                                                var dat = eval("("+dat+")");
+                                                $.toast(dat.message, "success");
+                                                $('input[name="field_615_"]').val(dat.path);
+                                            });
+                                            if(i < length){
+                                                wxUpload();
+                                            }*/
+                                        },
+                                        fail: function (res) {
+                                            alert(JSON.stringify(res));
+                                        }
+                                    });
+                                    
+                                };
+                                wxUpload();
+                            }
+                        });
                     },
                     validate(){   //验证手机号码是否正确
                         var This = this;
@@ -522,7 +567,7 @@
                                     var result = res.data;
                                     This.infoData.isBind = result.is_binding;
                                     This.infoData.isDraw = result.is_draw;
-                                    This.infoData.isFace = result.is_face;
+                                    This.infoData.isFace = result.is_face=0;
                                     This.infoData.isPrize = result.is_prize;
                                     This.infoData.isTransfer = result.is_transfer;
                                     This.infoData.prizeLevel = result.prize_level;  //此数据后台未返回       
@@ -543,6 +588,10 @@
                                 console.log(XMLHttpRequest)
                             }
                         })
+                    },
+                    sureHandle(){
+                        this.alertModel.more = true;
+                        this.alertModel.face = false;
                     },
                     isPhone : function(str) {  //判断是否是正确的手机
                         if(typeof str === 'number'){
