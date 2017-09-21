@@ -15,7 +15,7 @@
         <div class="page1" v-show="pageStatus.onePage">
             <img class="logo" src="images/logo.png" alt="">
             <img class="title" src="images/title.png" alt="">
-            <!-- <p class="info">即日起-10月31日，绑定我行微信银行完成人脸照片上传即可获取相应“颜值分”参与抽奖，有机会赢取迪士尼电子门票、costa咖啡兑换券、现金红包等丰富奖品</p> -->
+            <span class="ruleBtn" @click="pageStatus.fourPage = true">活动规则</span>
             <span class="startBtn" @click="startHandle"><img src="images/start.png" alt=""></span>
         </div>
         <div class="page2" v-show="pageStatus.twoPage">
@@ -53,7 +53,12 @@
                 <span class="balance">{{face.score}}</span>
             </div>
         </div>
-
+        <div class="page4" v-show="pageStatus.fourPage">
+            <img class="rule" src="images/rule.png" alt="">
+            <span class="back">
+                <img src="images/back.png" alt="" @click="pageStatus.fourPage = false">
+            </span>
+        </div>
         <!-- 未绑定银行卡 -->
         <div class="goBind model" v-show="status.isBind">
             <div class="modelBox">
@@ -103,7 +108,7 @@
         </div>
 
         <!--中奖成功失败弹框  -->
-        <div class="giftMore model" v-show="alertModel.lotterySuccess">
+        <div class="giftMore model" v-show="alertModel.lotterySuccess" :class="[infoData.prizeLevel == 3 ? 'redModel' : '']">
             <div class="modelBox">
                 <span class="close" v-show="infoData.prizeLevel == 0" @click="alertModel.lotterySuccess = false">
                     <img src="images/close.png" alt="">
@@ -114,9 +119,9 @@
                     <div class="title" v-if="infoData.prizeLevel == 0"><img src="images/error.png" alt=""></div>
                     <span class="bq_img" v-if="infoData.prizeLevel ==  1"><img src="images/win_1.png" alt=""></span>
                     <span class="bq_img" v-if="infoData.prizeLevel ==  2"><img src="images/win_2.png" alt=""></span>
-                    <span class="red_img" v-if="infoData.prizeLevel == 3" @click="rewardRedPack">
+                    <span class="red_img" v-if="infoData.prizeLevel == 3" >
                         <img src="images/red_pack.png" alt="">
-                        <span>现金红包</span>
+                        <span class="kai" :class="[openRed? 'kai_active' : '']"  @click="rewardRedPack"><img src="images/kai.png" alt=""></span>
                     </span>
                     <span class="error_img" v-if="infoData.prizeLevel == 0">
                         <img src="images/cry_2.png" alt="">
@@ -131,20 +136,21 @@
             </div>
         </div>
         <!-- 中奖展示弹框 -->
-        <div class="rewardModel model" v-show="alertModel.lotteryShow">
+        <div class="rewardModel model" v-show="alertModel.lotteryShow" :class="[gift.num == 3 ? 'rewardModelRed' : '']">
             <div class="modelBox">
                 <span class="close" @click="alertModel.lotteryShow = false">
                     <img src="images/close.png" alt="">
                 </span>
                 <div class="whiteBox">
                     <span class="bq_img">
-                        <img :src="gift.img[gift.num]" alt="">                        
+                        <img :src="gift.img[gift.num]" alt=""> 
+                        <p v-if="gift.num == 3">{{gift.money}}<b>元</b></p>                 
                     </span>
-                    <p v-if="lottery.num == 3">{{gift.money}}</p>
-                    <p v-html="gift.txt[gift.num]">迪士尼电子门票<br>将发送至该手机号码</p>
+                    
+                    <p v-html="gift.txt[gift.num]"  v-if="gift.num != 3"></p>
                     <!--costa咖啡券<br>将发送至该手机号码    -->
                 </div>                
-                <div class="txt-box">
+                <div class="txt-box" v-if="gift.num != 3">
                     <p>注意短信查收，如有疑问，<br>请拨打客服电话：0571-96527</p>
                 </div>
             </div>
@@ -283,7 +289,8 @@
                     pageStatus: {   //page显示
                         onePage: true,
                         twoPage: false,
-                        threePage: false
+                        threePage: false,
+                        fourPage:false
                     },
                     status: {
                         isBind: false,   //绑定弹框状态
@@ -313,11 +320,12 @@
                         balance:null,      //余额
                     },
                     gift:{
-                        num:null,
+                        num:3,
                         money:null,
                         img:['','images/win_1.png','images/win_2.png','images/win_3.png'],
                         txt:['','迪士尼电子门票<br>将发送至该手机号码','costa咖啡券<br>将发送至该手机号码','已存入您的微信钱包']
-                    }
+                    },
+                    openRed:false
                 },
                 methods: {
                     startHandle: function () {      //开始游戏
@@ -529,6 +537,7 @@
                     },
                     rewardRedPack(){   //开红包
                         var This = this;
+                        this.openRed = true;
                         $.ajax({
                             url: This.linkHref.redPack,
                             dataType: 'json',
@@ -536,6 +545,8 @@
                             data: {},
                             async: true,
                             success: function (res) {
+                                This.openRed = false;
+                                res.sta = 0;
                                 if (res.sta == 0) {   //领取成功
                                     This.gift.num = 3;
                                     // This.gift.money = 100;
@@ -567,8 +578,8 @@
                                 if (res.sta == 0) {   //正常
                                     var result = res.data;
                                     This.infoData.isBind = result.is_binding;
-                                    This.infoData.isDraw = result.is_draw;
-                                    This.infoData.isFace = result.is_face=0;
+                                    This.infoData.isDraw = result.is_draw ;
+                                    This.infoData.isFace = result.is_face;
                                     This.infoData.isPrize = result.is_prize;
                                     This.infoData.isTransfer = result.is_transfer;
                                     This.infoData.prizeLevel = result.prize_level;  //此数据后台未返回       

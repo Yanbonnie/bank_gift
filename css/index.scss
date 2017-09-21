@@ -56,13 +56,18 @@ img{
             margin-left: REMTWO(540);
             top: REM(215);
         }
-        p.info{
-            width: 90%;
-            position: absolute;
-            top: REM(1000);
-            color: #2278bf;
-            font-size: REM(24);
-            left: 5%;
+        .ruleBtn{
+            font-size:REM(24);
+            height: 2rem;
+            line-height: 2rem;
+            position:absolute;
+            top: 26rem;
+            right: 5%;
+            display: inline-block;
+            padding:0 REM(20);
+            background:rgba(41,136,212,0.8);
+            color: #fff;
+            @include prefixer(border-radius,5px);
         }
         .startBtn{
             width: REM(217);
@@ -260,15 +265,37 @@ img{
             }
         }
     }
+    .page4{
+        width: 100%;
+        height:100%;
+         background: url($URL+'page4.jpg') no-repeat #dcf1fc center -35px;
+        @include prefixer(background-size,100% auto);
+        position: absolute;
+        left: 0;
+        top: 0;
+        min-height: 46rem;
+        .rule{
+            display: block;
+            width: 90%;
+            margin: 0 auto;
+        }
+        .back{
+            width: REM(157);
+            position: absolute;
+            left: 50%;
+            margin-left:REMTWO(157);
+            top: REM(1150)
+        }
+    }
 }
 
 @-webkit-keyframes action1end {
-	0%   { background-position: 0   0rem; }
-	100% { background-position: 0 -20rem; }
+    0%   { background-position: 0   0rem; }
+    100% { background-position: 0 -20rem; }
 }
 @keyframes action1end {
-	0%   { background-position: 0   0rem; }
-	100% { background-position: 0 -20rem; }
+    0%   { background-position: 0   0rem; }
+    100% { background-position: 0 -20rem; }
 }
 //弹框
 
@@ -462,6 +489,82 @@ img{
         }
     }
 }
+
+//红包
+.redModel{
+    .modelBox{
+        background:none;
+        width: REM(452);
+        height: REM(608);
+        .whiteBox{
+            .title{
+                display: none;
+            }
+            background:none;
+            .red_img{
+                width: 100%;
+                .kai{
+                    position:absolute;
+                    left: 50%;
+                    width: REM(139);
+                    height: REM(139);
+                    margin-left: REMTWO(139);
+                    top: REM(335);
+                }
+            }
+        }
+    }
+}
+.kai_active{
+        animation: rotate-x 0.5s infinite;
+        -moz-animation: rotate-x 0.5s infinite;  /* Firefox */
+        -webkit-animation: rotate-x 0.5s infinite;   /* Safari 和 Chrome */
+        -o-animation: rotate-x 0.5s infinite;    /* Opera */
+    }
+        @keyframes rotate-x {
+            50% {
+                transform: scaleX(0);
+            }
+            100% {
+                transform: scaleX(1);
+            }
+        }
+        /*  IE  */
+        @-ms-keyframes rotate-x {
+            50% {
+                -ms-transform: scaleX(0);
+            }
+            100% {
+                -ms-transform: scaleX(1);
+            }
+        }
+        /* Safari and Chrome*/
+        @-webkit-keyframes rotate-x {
+            50% {
+                -webkit-transform: scaleX(0);
+            }
+            100% {
+                -webkit-transform: scaleX(1);
+            }
+        }
+        /* Firefox  */
+        @-moz-keyframes rotate-x {
+            50% {
+                -moz-transform: scaleX(0);
+            }
+            100% {
+                -moz-transform: scaleX(1);
+            }
+        }
+        /*  Opera  */
+        @-o-keyframes rotate-x {
+            50% {
+                -o-transform: scaleX(0);
+            }
+            100% {
+                -o-transform: scaleX(1);
+            }
+        }
 // 中奖展示弹框
 .rewardModel{
     .modelBox{
@@ -476,6 +579,35 @@ img{
                 color: #ffffff;
                 text-align: center;
                 font-size: REM(24);
+            }
+        }
+    }
+}
+.rewardModelRed{
+    .modelBox{
+        background:none;
+        width: REM(456);
+        height: REM(608);
+        padding:0;
+        .whiteBox{
+            background:none;
+            padding:0;
+            .bq_img{
+                width: 100%;
+                position:relative;
+                p{
+                    position:absolute;
+                    width: 100%;
+                    top: 8.7rem;
+                    left: 0;
+                    text-align: center;
+                    font-size: REM(50);
+                    b{
+                        font-size: REM(24);
+                        line-height: REM(95);
+                        margin-left: 10px;
+                    }
+                }
             }
         }
     }
@@ -735,64 +867,64 @@ img{
 }
 
 @-webkit-keyframes zoomIn {
-	0% {
-		opacity: 0;
-		-webkit-transform: scale3d(.3,.3,.3);
-		transform: scale3d(.3,.3,.3)
-	}
+    0% {
+        opacity: 0;
+        -webkit-transform: scale3d(.3,.3,.3);
+        transform: scale3d(.3,.3,.3)
+    }
 
-	50% {
-		opacity: 1
-	}
+    50% {
+        opacity: 1
+    }
 }
 
 @keyframes zoomIn {
-	0% {
-		opacity: 0;
-		-webkit-transform: scale3d(.3,.3,.3);
-		transform: scale3d(.3,.3,.3)
-	}
+    0% {
+        opacity: 0;
+        -webkit-transform: scale3d(.3,.3,.3);
+        transform: scale3d(.3,.3,.3)
+    }
 
-	50% {
-		opacity: 1
-	}
+    50% {
+        opacity: 1
+    }
 }
 
 .zoomIn {
-	@include prefixer(animation,zoomIn 0.5s ease-in both);
+    @include prefixer(animation,zoomIn 0.5s ease-in both);
 }
 
 
 @-webkit-keyframes fadeInDown {
-	0% {
-		opacity: 0;
-		-webkit-transform: translate3d(0,-100%,0);
-		transform: translate3d(0,-100%,0)
-	}
+    0% {
+        opacity: 0;
+        -webkit-transform: translate3d(0,-100%,0);
+        transform: translate3d(0,-100%,0)
+    }
 
-	100% {
-		opacity: 1;
-		-webkit-transform: none;
-		transform: none
-	}
+    100% {
+        opacity: 1;
+        -webkit-transform: none;
+        transform: none
+    }
 }
 
 @keyframes fadeInDown {
-	0% {
-		opacity: 0;
-		-webkit-transform: translate3d(0,-100%,0);
-		transform: translate3d(0,-100%,0)
-	}
+    0% {
+        opacity: 0;
+        -webkit-transform: translate3d(0,-100%,0);
+        transform: translate3d(0,-100%,0)
+    }
 
-	100% {
-		opacity: 1;
-		-webkit-transform: none;
-		transform: none
-	}
+    100% {
+        opacity: 1;
+        -webkit-transform: none;
+        transform: none
+    }
 }
 
 .fadeInDown {
-	@include prefixer(animation,fadeInDown 1s ease-in both);
+    @include prefixer(animation,fadeInDown 1s ease-in both);
 }
 
 /*闪光闪动*/
